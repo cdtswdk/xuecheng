@@ -23,6 +23,7 @@
         <module>xc-govern-center</module>
         <module>xc-service-search</module>
         <module>xc-govern-center-test</module>
+        <module>xc-service-manage-media</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
