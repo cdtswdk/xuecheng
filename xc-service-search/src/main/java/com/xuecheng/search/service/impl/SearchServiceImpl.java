@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -17,6 +18,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +61,7 @@ public class SearchServiceImpl implements SearchService {
         //搜索源对象
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-        //社会返回的字段
+        //设置返回的字段
         String[] ex_sourceFieldArray = ex_sourceField.split(",");
         searchSourceBuilder.fetchSource(ex_sourceFieldArray, new String[]{});
 
@@ -93,7 +95,7 @@ public class SearchServiceImpl implements SearchService {
             page = 1;
         }
         if(size<=0){
-            size = 1;
+            size = 5;
         }
         int start = (page-1)*size;
         searchSourceBuilder.from(start);
@@ -130,8 +132,25 @@ public class SearchServiceImpl implements SearchService {
 
             //获取源文档
             Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+
+            //取出id
+            String id = (String) sourceAsMap.get("id");
+            coursePub.setId(id);
             //取出名称
             String name = (String) sourceAsMap.get("name");
+            //取出高亮字段
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            if(highlightFields!=null){
+                HighlightField nameField = highlightFields.get("name");
+                if(nameField!=null){
+                    Text[] fragments = nameField.fragments();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (Text fragment : fragments) {
+                        stringBuilder.append(fragment.toString());
+                    }
+                    name = stringBuilder.toString();
+                }
+            }
             coursePub.setName(name);
             //图片
             String pic = (String) sourceAsMap.get("pic");

@@ -208,7 +208,7 @@ public class searchTest {
 
         //设置分页参数
         int page = 1;
-        int size = 1;
+        int size = 10;
         int from = (page - 1) * size;
 
         searchSourceBuilder.from(from);
@@ -235,9 +235,10 @@ public class searchTest {
             String name = (String) sourceAsMap.get("name");
             String studymodel = (String) sourceAsMap.get("studymodel");
             Double price = (Double) sourceAsMap.get("price");
-            Date date = simpleDateFormat.parse((String) sourceAsMap.get("timestamp"));
+            //Date date = simpleDateFormat.parse((String) sourceAsMap.get("timestamp"));
 
-            System.out.println(name + " " + studymodel + " " + price + " " + date);
+//            System.out.println(name + " " + studymodel + " " + price + " " + date);
+            System.out.println(name + " " + studymodel + " " + price);
         }
     }
 
